@@ -1,0 +1,65 @@
+From 787eaaa373073e17f3a53658b085c255bc2c8ff8 Mon Sep 17 00:00:00 2001
+From: Leonid Yuriev <leo@yuriev.ru>
+Date: Mon, 5 Oct 2020 19:12:20 +0300
+Subject: [PATCH] mdbx-cmake: pthread workaround for buggy
+ toolchain/cmake/buildroot.
+
+Change-Id: I0d95e783abbd10a63cd1595a9de50593e814a967
+Signed-off-by: Leonid Yuriev <leo@yuriev.ru>
+---
+ CMakeLists.txt | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 95f116521..20a50a453 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -173,10 +173,27 @@ if(NOT CMAKE_BUILD_TYPE)
+ endif()
+ string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPERCASE)
+ 
++set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
++set(THREADS_PREFER_PTHREAD_FLAG TRUE)
++find_package(Threads REQUIRED)
++
+ include(cmake/utils.cmake)
+ include(cmake/compiler.cmake)
+ include(cmake/profile.cmake)
+ 
++# Workaround for `-pthread` toolchain/cmake bug
++if(NOT APPLE AND NOT MSVC
++    AND CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_THREAD_LIBS_INIT
++    AND (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_CLANG))
++  check_compiler_flag("-pthread" CC_HAS_PTHREAD)
++  if(CC_HAS_PTHREAD AND NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-pthread")
++    message(STATUS "Force add -pthread for linker flags to avoid troubles")
++    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
++    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pthread")
++    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -pthread")
++  endif()
++endif()
++
+ CHECK_FUNCTION_EXISTS(pow NOT_NEED_LIBM)
+ if(NOT_NEED_LIBM)
+   set(LIB_MATH "")
+@@ -190,8 +207,6 @@ else()
+   endif()
+ endif()
+ 
+-find_package(Threads REQUIRED)
+-
+ if(SUBPROJECT)
+   if(NOT DEFINED BUILD_SHARED_LIBS)
+     option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)" OFF)
+@@ -541,7 +556,7 @@ macro(target_setup_options TARGET)
+ endmacro()
+ 
+ macro(libmdbx_setup_libs TARGET MODE)
+-  target_link_libraries(${TARGET} ${MODE} ${CMAKE_THREAD_LIBS_INIT})
++  target_link_libraries(${TARGET} ${MODE} Threads::Threads)
+   if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+     target_link_libraries(${TARGET} ${MODE} ntdll.lib)
+     if(MDBX_NTDLL_EXTRA_IMPLIB AND MDBX_AVOID_CRT)
+-- 
+2.28.0
+

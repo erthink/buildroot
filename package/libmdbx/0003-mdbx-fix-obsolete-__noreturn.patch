@@ -1,0 +1,27 @@
+From 280ed17ea2dff464c9688fcc92079f36d8b74621 Mon Sep 17 00:00:00 2001
+From: Leonid Yuriev <leo@yuriev.ru>
+Date: Sat, 3 Oct 2020 11:35:26 +0300
+Subject: [PATCH] mdbx: fix obsolete `__noreturn`.
+
+Change-Id: Ic78843d6f16de2a409c16ceecc7acb2ed8aa3e68
+Signed-off-by: Leonid Yuriev <leo@yuriev.ru>
+---
+ mdbx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mdbx.c b/mdbx.c
+index 04ea5140d..9212640fe 100644
+--- a/mdbx.c
++++ b/mdbx.c
+@@ -141,7 +141,7 @@ __extern_C void __assert(const char *, const char *, unsigned int, const char *)
+ #else
+     __nothrow
+ #endif /* __THROW */
+-    __noreturn;
++    MDBX_NORETURN;
+ #define __assert_fail(assertion, file, line, function)                         \
+   __assert(assertion, file, line, function)
+ 
+-- 
+2.28.0
+

@@ -1,0 +1,27 @@
+From 8d4e7994c0c5c0cf69326139717e324f90bff65b Mon Sep 17 00:00:00 2001
+From: Leonid Yuriev <leo@yuriev.ru>
+Date: Mon, 5 Oct 2020 15:09:10 +0300
+Subject: [PATCH] mdbx-load: fix minor false-positive GCC warning.
+
+Change-Id: Ie75c793712d050e8d3da76a4d0a8df9b81dc5275
+Signed-off-by: Leonid Yuriev <leo@yuriev.ru>
+---
+ mdbx_load.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mdbx_load.c b/mdbx_load.c
+index e5e72fc8f..54e179553 100644
+--- a/mdbx_load.c
++++ b/mdbx_load.c
+@@ -318,7 +318,7 @@ static int readhdr(void) {
+     }
+ 
+     for (int i = 0; dbflags[i].bit; i++) {
+-      bool value;
++      bool value = false;
+       if (valbool(dbuf.iov_base, dbflags[i].name, &value)) {
+         if (value)
+           dbi_flags |= dbflags[i].bit;
+-- 
+2.28.0
+

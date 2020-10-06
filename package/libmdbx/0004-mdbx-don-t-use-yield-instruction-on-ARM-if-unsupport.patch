@@ -1,0 +1,28 @@
+From 70b615e8d4d10cda2d961a815dd15eb87a1f3925 Mon Sep 17 00:00:00 2001
+From: Leonid Yuriev <leo@yuriev.ru>
+Date: Sun, 4 Oct 2020 14:54:11 +0300
+Subject: [PATCH] mdbx: don't use `yield` instruction on ARM if unsupported.
+
+Change-Id: I0b01d783fe4336b089f4b051fb61c203b5879aa5
+Signed-off-by: Leonid Yuriev <leo@yuriev.ru>
+---
+ mdbx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/mdbx.c b/mdbx.c
+index aba445424..a9ba1ee85 100644
+--- a/mdbx.c
++++ b/mdbx.c
+@@ -763,7 +763,8 @@ static __always_inline void atomic_yield(void) {
+ #else
+   __asm__ __volatile__("hint @pause");
+ #endif
+-#elif defined(__arm__) || defined(__aarch64__)
++#elif defined(__aarch64__) || (defined(__ARM_ARCH) && __ARM_ARCH > 6) ||       \
++    defined(__ARM_ARCH_6K__)
+ #ifdef __CC_ARM
+   __yield();
+ #else
+-- 
+2.28.0
+

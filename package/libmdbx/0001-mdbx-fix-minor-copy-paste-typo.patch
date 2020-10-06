@@ -1,0 +1,27 @@
+From 5807e2eda046bff35946972289236bbef5c0c597 Mon Sep 17 00:00:00 2001
+From: Leonid Yuriev <leo@yuriev.ru>
+Date: Thu, 1 Oct 2020 02:27:29 +0300
+Subject: [PATCH] mdbx++: fix minor copy&paste typo.
+
+Change-Id: I0af3e7ffbbd1231069a60f9f48880df3df2141d7
+Signed-off-by: Leonid Yuriev <leo@yuriev.ru>
+---
+ mdbx.h++ | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mdbx.h++ b/mdbx.h++
+index 095ff9abb..2050f4b92 100644
+--- a/mdbx.h++
++++ b/mdbx.h++
+@@ -538,7 +538,7 @@ struct LIBMDBX_API_TYPE slice : public ::MDBX_val {
+   byte *from_base58(byte *dest, size_t dest_size,
+                     bool ignore_spaces = false) const;
+ 
+-  /// vReturns the buffer size in bytes needed for conversion
++  /// \brief Returns the buffer size in bytes needed for conversion
+   /// [Base58](https://en.wikipedia.org/wiki/Base58) dump to data.
+   MDBX_CXX11_CONSTEXPR size_t from_base58_bytes() const noexcept {
+     return length() / 11 * 8 + length() % 11 * 32 / 43;
+-- 
+2.28.0
+
